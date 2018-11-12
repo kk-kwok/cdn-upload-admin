@@ -1,81 +1,40 @@
-# **cdn upload admin**
+# **cdn-upload-admin**
 
-> cdn upload admin api server
+## 一、开发目的
+### 1、公司主要业务是做发行平台，项目比较多，不同的游戏项目根据发行地区不同可能使用当地IDC资源或者是云资源，运营同学会频繁上传各项目安装包文件或其他jpg/png等文件生成url方便用户或客户端包下载。
+### 2、为了方便管理项目、IDC资源服LVS集群和CDN的文件等开发了此平台。
+### 3、此平台部署在一台类似中心服务器上，服务器上安装了inotifywait工具并后台跑脚本会自动把上传后的文件用rsync同步到多个idc 资源服LVS集群中，另外此服务器也是配置为CDN的源站，CDN会从该服务器的站点拉取文件。
 
-## 一、Build setup
+## 二、开发工具
+### [前端为 vue + vuex + vue-router + axios + element-ui](./cdnadmin_webserver)
+### [后端为 go, 纯api方式， 使用jwt做token认证](./cdnadmin_apiserver)
 
-### 1. 请确保已经安装好go和设置好$GOPATH、$GOROOT环境变量
-### 2. 请确保已经安装好了mysql 
-```
-导入 ../sql/cdn-upload.sql 创建库和表
+## 三、用xmind画的简单功能模块图
+![](./images/xmind.jpg)
 
-设置管理员账号密码， 密码是md5加密后的
-use cdnupload;
-INSERT INTO t_user (`is_admin`, `username`, `password`) VALUES (0, 'admin', '21232f297a57a5a743894a0e4a801fc3');
+## 四、平台功能简图
+### 1. CDN文件管理
+#### 查询、编辑、删除、刷新CDN(IDC资源服不需要预加载，目前在后端是集成了CDN77和腾讯云海外CDN的刷新预加载接口)、上传文件
+![](./images/cdn_file.jpg)
+#### upload
+![](./images/cdn_upload.jpg)
 
-授权用户能访问 cdnupload库
-GRANT all ON cdnupload.* to ${dbuser}@"${dbip}" Identified by "${dbpwd}" WITH GRANT OPTION;
-flush privileges;
-```
-### 3. 编辑cfg.json更改root_path和db.addr的值为实际情况
-```
-{
-    "debug": true,
-    "http": {
-        "listen": "0.0.0.0:9527",
-        "root_path": "/data/resource/cdn_file/"
-    },
-    "db": {
-        "addr": "${dbuser}:${dbpwd}@tcp(${dbip}:${dbport｝)/cdnupload?charset=utf8mb4",
-        "idle": 10,
-        "max": 100
-    }
-}
-```
-### 4. 安装依赖
-```  go get```
-### 5. 编译
-```chmod u+x control && ./control build``` 
-### 6. 启动
-``` ./control start```
-### 7. 查看日志
-``` ./control tail```
+### 2. 用户密码修改
+![](./images/update_pwd.jpg)
 
-## 二、设置 NGINX 反向代理
+### 3.系统管理
+#### # 业务管理
+##### 定义业务的名称、使用的CDN平台(具体的IDC资源服或其他CDN厂商)、域名、域名ID(此域名ID是当前使用的一家CDN厂商特有的，调用他们的API需要这个参数，其他不需要使用可使用为0)、存放文件的目录(子目录， 父目录是在后端cfg.json里的root_path定义了)
+![](./images/project.jpg)
 
-### 请确保已经安装好 NGINX，下面是相关的 nginx server配置
-```
-server {
-    listen  80;
-    server_name ${domain}; 
-    access_log logs/cdnupload_access.log main;
-    
-    # 设置 header是在开发环境下前后端分离时支持跨域，在线上环境时可不用配置
-    add_header 'Access-Control-Allow-Origin' '*';
-    add_header 'Access-Control-Allow-Credentials' 'true';
-    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
-    add_header 'Access-Control-Allow-Headers' '*';
-    add_header 'Access-Control-Expose-Headers' '*';
-    
-    # 本地开发时vue在请求POST方法前会请求一次OPTIONS请求，go后端没有处理，直接在nginx这里处理返回200状态
-    # vue webpack打包后的文件部署到线上服时可不用配置
-    if ( $request_method = 'OPTIONS' ) {
-        return 200;
-    }
-    # 前端静态资源文件目录，在vue-router中设置 model为history时Nginx需要以下配置try_files
-    location / {
-        root   /data/cdn-upload-admin/cdnadmin_webserver;
-        index index.html;
-        try_files $uri $uri/ /;
-    }
-    # api请求反向代理至后端， 定义最大上传文件大小为 1000M
-    location /api {
-        client_max_body_size 1000M;
-        proxy_pass http://127.0.0.1:9527;
-        proxy_redirect     off;
-        proxy_set_header   Host             $host;
-        proxy_set_header   X-Real-IP        $remote_addr;
-        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-    }
-}
-```
+#### # CDN平台
+##### 定义CDN厂商的API地址、SecretID、 SecretKey 和调用方法(由于单文件基本上都是几百M的大文件，所以只配置了文件预加载的方法)， IDC资源服只需要配置名称。
+![](./images/platform.jpg)
+
+#### # 文件后缀
+##### 定义限制上传的文件后缀
+![](./images/suffix.jpg)
+
+#### # 用户管理
+##### 用户的增删查改、重置用户默认密码、 开启/禁用管理员， 只有管理员才能进行系统管理(此处只是在用户登陆时获取管理员角色后显示系统管理的路由，并没有非常细粒度的在后端进行用户权限验证)
+![](./images/user.jpg)
