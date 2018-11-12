@@ -1,0 +1,12 @@
+{
+    "debug": true,
+    "http": {
+        "listen": "0.0.0.0:9527",
+        "root_path": "/data/resource/cdn_file/"
+    },
+    "db": {
+        "addr": "${dbuser}:${dbpwd}@tcp(${dbip}:${dbport｝)/cdnupload?charset=utf8mb4",
+        "idle": 10,
+        "max": 100
+    }
+}
