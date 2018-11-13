@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `t_user` (
 
 
 CREATE TABLE IF NOT EXISTS `t_project` (
-  `id` int(11) NOT NULL COMMENT '项目ID',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '项目ID',
   `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除: 0:正常/1:已删除',
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '项目名称',
   `platform_id` int(11) NOT NULL DEFAULT '0' COMMENT 'CDN平台ID',
