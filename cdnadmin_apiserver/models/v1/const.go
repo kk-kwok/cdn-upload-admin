@@ -21,6 +21,7 @@ type UserCredentials struct {
 
 // UserAuthRes : DEFINES USER AUTH RESPONSE
 type UserAuthRes struct {
+	UserID   int    `json:"user_id"`
 	UserName string `json:"username"`
 	IsAdmin  int    `json:"is_admin"`
 	Token    string `json:"token"`
@@ -84,6 +85,8 @@ type CDNFile struct {
 	IsDelete    int    `json:"is_delete"`
 	ProjectID   int    `json:"project_id"`
 	ProjectName string `json:"project_name"`
+	UserID      int    `json:"user_id"`
+	UserName    string `json:"username"`
 	Path        string `json:"path"`
 	Domain      string `json:"domain"`
 	FileName    string `json:"file_name"`
@@ -97,7 +100,7 @@ type CDNFile struct {
 // CDNPush : DEFINES CDN PUSH JSON STRUCT
 type CDNPush struct {
 	CDNName   string `json:"cdn_name"`
-	CDNId     int    `json:"cdn_id"`
+	CDNID     int    `json:"cdn_id"`
 	Domain    string `json:"domain"`
 	Path      string `json:"path"`
 	FileName  string `json:"file_name"`

@@ -73,6 +73,7 @@ func AddCDNFile(w http.ResponseWriter, r *http.Request) {
 	cfile.FileName = r.MultipartForm.Value["file_name"][0]
 	cfile.ProjectName = r.MultipartForm.Value["project_name"][0]
 	cfile.Comment = r.MultipartForm.Value["comment"][0]
+	cfile.UserID, _ = strconv.Atoi(r.MultipartForm.Value["user_id"][0])
 	if cfile.FileName == "" || cfile.ProjectName == "" {
 		models.ResponseWithJSON(w, http.StatusOK,
 			models.Response{Code: 4000, Msg: "bad param"})

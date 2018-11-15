@@ -16,8 +16,8 @@ func GetToken(user *UserCredentials) (content []byte, err error) {
 	db := config.GetDB()
 	var queryUser UserCredentials
 	var u UserAuthRes
-	sql := "SELECT `username`, `password`, `is_admin` FROM t_user WHERE `username` = ?"
-	err = db.QueryRow(sql, user.UserName).Scan(&u.UserName, &queryUser.Password, &u.IsAdmin)
+	sql := "SELECT `id`, `username`, `password`, `is_admin` FROM t_user WHERE `username` = ?"
+	err = db.QueryRow(sql, user.UserName).Scan(&u.UserID, &u.UserName, &queryUser.Password, &u.IsAdmin)
 	if err != nil {
 		return
 	}
@@ -29,7 +29,7 @@ func GetToken(user *UserCredentials) (content []byte, err error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := make(jwt.MapClaims)
 	claims["username"] = user.UserName
-	claims["exp"] = time.Now().Add(time.Hour * time.Duration(6)).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * time.Duration(12)).Unix()
 	claims["iat"] = time.Now().Unix()
 	token.Claims = claims
 	u.Token, err = token.SignedString([]byte(TokenSecretKey))

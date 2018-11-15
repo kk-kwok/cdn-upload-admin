@@ -37,6 +37,7 @@ export default{
       if (res.data.code === 200) {
         this.$store.commit('setToken', res.data.data)
         this.$store.commit('setUserName', res.data.data)
+        this.$store.commit('setUserID', res.data.data)
         this.$store.commit('setRoles', res.data.data)
         this.$notify({
           title: 'Success',

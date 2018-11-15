@@ -9,6 +9,7 @@ export default {
       showText: '显示密码',
       pwdType: 'password',
       userInfo: {
+        user_id: '',
         username: '',
         password: '',
         is_admin: ''
