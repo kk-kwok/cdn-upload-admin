@@ -44,6 +44,9 @@
                <el-form-item label="所属项目">
                  <span>{{props.row.project_name}}</span>
                </el-form-item>
+                <el-form-item label="上传用户">
+                  <span>{{props.row.username}}</span>
+                </el-form-item>
                 <el-form-item label="CDN URL">
                   <span>{{props.row.domain}}/{{props.row.path}}/{{props.row.file_name}}</span>
                 </el-form-item>

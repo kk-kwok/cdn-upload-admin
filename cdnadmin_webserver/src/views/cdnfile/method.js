@@ -59,6 +59,8 @@ export default{
         this.cfParam.append('file_name', this.cdnFileForm.file_name)
         this.cfParam.append('comment', this.cdnFileForm.comment)
         const token = this.$store.state.userInfo.token ? this.$store.state.userInfo.token : window.sessionStorage.getItem('token')
+        const userID = this.$store.state.userInfo.user_id ? this.$store.state.userInfo.user_id : window.sessionStorage.getItem('user_id')
+        this.cfParam.append('user_id', userID)
         let config = {
           headers: {
             // 'Content-Type': 'multipart/form-data',

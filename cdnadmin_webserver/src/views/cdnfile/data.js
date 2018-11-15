@@ -26,6 +26,7 @@ export default{
       dialogCreateCDNFile: false,
       dialogEditCDNFile: false,
       cdnFileForm: {
+        user_id: '',
         project_name: '',
         file_name: '',
         comment: ''
